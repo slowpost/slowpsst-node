@@ -206,7 +206,7 @@ ExecStop=/usr/bin/docker stop slowpost_container</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Prepare a <code>slowpost</code> instance that will accept a <code>repo</code> and a <code>flightplan</code>.</p>
+              <p>Prepare a <code>slowpost</code> instance that will accept a new <code>Flightplan</code>.</p>
 
             </div>
             
@@ -221,23 +221,7 @@ ExecStop=/usr/bin/docker stop slowpost_container</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p><code>slowpost.repo</code> defines the location of the source code.
-Redefine it to use a fork.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>slowpost.repo = <span class="hljs-string">"git://git@github.com:slowpost/slowpost.git"</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p><code>slowpost.flightplan</code> contains routes to all your destination machines.
+              <p>Construct a <code>slowpost.flightplan</code> with routes to all your destination machines.
 Routes are defined with <code>host</code>, <code>username</code> and <code>agent</code> parameters durring the flightplan briefing.
 Your SSH identities are loaded automatically when <code>agent</code> is assigned to your SSH authentication socket.</p>
 
@@ -254,13 +238,88 @@ Your SSH identities are loaded automatically when <code>agent</code> is assigned
         </li>
         
         
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>The owner of this <code>miniLockID</code> is permitted access to the host library.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.miniLockID = <span class="hljs-string">"PASTE_YOUR_MINILOCK_ID_HERE"</span></pre></div></div>
+            
+        </li>
+        
+        
         <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Define default set of commands.</p>
+              <p><code>location</code> describes the culture and geography of the destination.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.location = <span class="hljs-string">"an undisclosed location"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><code>hostname</code> defaults to the name of the first destination machine if left undefined.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.hostname = <span class="hljs-literal">undefined</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><code>emailAddress</code> defaults to <code>bonjour@hostname</code> if left undefined.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.emailAddress = <span class="hljs-literal">undefined</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Redefine <code>repo</code> to deploy a private fork of the source code.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.repo = <span class="hljs-string">"git://git@github.com:slowpost/slowpost.git"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Define commands on the flightplan.</p>
 
             </div>
             
@@ -378,13 +437,14 @@ paris.example.org ● ok
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <p>Exports a <code>slowpost</code> instance that should receive <code>repo</code> and <code>flightplan</code> members in your <code>flightplan.coffee</code> script.</p>
+              <p>Exports a <code>slowpost</code> instance that should a <code>flightplan</code>, <code>repo</code> and <code>miniLock ID</code> in your <code>flightplan.coffee</code> script.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>slowpost = <span class="hljs-built_in">module</span>.exports =
-  <span class="hljs-attribute">repo</span>: <span class="hljs-literal">undefined</span>
-  <span class="hljs-attribute">flightplan</span>: <span class="hljs-literal">undefined</span></pre></div></div>
+  <span class="hljs-attribute">flightplan</span>: <span class="hljs-literal">undefined</span>
+  <span class="hljs-attribute">miniLockID</span>: <span class="hljs-literal">undefined</span>
+  <span class="hljs-attribute">repo</span>: <span class="hljs-literal">undefined</span></pre></div></div>
             
         </li>
         
@@ -395,11 +455,18 @@ paris.example.org ● ok
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Call <code>slowpost.defineCommands()</code> after your <code>flightplan.briefing</code> to define the default set of commands.</p>
+              <p>Call <code>slowpost.defineCommands()</code> after your <code>flightplan.briefing</code> is complete to define the default set of slowpost commands.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>slowpost.d<span class="hljs-function"><span class="hljs-title">efineCommands</span> = -&gt;</span>
+  <span class="hljs-keyword">throw</span> <span class="hljs-string">"Can’t define slowpost commands without flightplan"</span> <span class="hljs-keyword">if</span> slowpost.flightplan <span class="hljs-keyword">is</span> <span class="hljs-literal">undefined</span>
+  <span class="hljs-keyword">throw</span> <span class="hljs-string">"Can’t define slowpost commands without miniLock ID"</span> <span class="hljs-keyword">if</span> slowpost.miniLockID <span class="hljs-keyword">is</span> <span class="hljs-literal">undefined</span>
+  <span class="hljs-keyword">throw</span> <span class="hljs-string">"Can’t define slowpost commands without repo"</span> <span class="hljs-keyword">if</span> slowpost.repo <span class="hljs-keyword">is</span> <span class="hljs-literal">undefined</span>
+  slowpost.location ?= slowpost.flightplan.target.destination
+  slowpost.hostname ?= slowpost.flightplan.target.hosts[<span class="hljs-number">0</span>].host
+  slowpost.emailAddress ?= <span class="hljs-string">"bonjour@<span class="hljs-subst">#{slowpost.host()}</span>"</span>
+
   Authority = <span class="hljs-built_in">require</span> <span class="hljs-string">"authority"</span>
   NaCl = <span class="hljs-built_in">require</span> <span class="hljs-string">"tweetnacl"</span>
   URL = <span class="hljs-built_in">require</span> <span class="hljs-string">"url"</span>
@@ -602,13 +669,13 @@ If the deploy branch does not exist it is created automatically.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  slowpost.local <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
-    branches = (line.trim() <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> local.exec(<span class="hljs-string">"git branch"</span>).stdout.split(<span class="hljs-string">"\n"</span>))
+    branches = (line.replace(<span class="hljs-string">"*"</span>, <span class="hljs-string">""</span>).trim() <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> local.exec(<span class="hljs-string">"git branch"</span>).stdout.trim().split(<span class="hljs-string">"\n"</span>))
     <span class="hljs-keyword">if</span> <span class="hljs-string">"deploy"</span> <span class="hljs-keyword">in</span> branches
       local.log <span class="hljs-string">"deploy branch is ready."</span>
     <span class="hljs-keyword">else</span>
       local.log <span class="hljs-string">"Creating deploy branch"</span>
       local.exec <span class="hljs-string">"git branch --create deploy"</span>
-      local.exec <span class="hljs-string">"git checkout deploy"</span></pre></div></div>
+    local.exec <span class="hljs-string">"git checkout deploy"</span></pre></div></div>
             
         </li>
         
@@ -668,7 +735,7 @@ It is tagged with <code>slowpost_image:commit-hash</code> and <code>slowpost_ima
             
             <div class="content"><div class='highlight'><pre>  slowpost.remote <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
     remote.log <span class="hljs-string">"Building /home/core/slowpost_image"</span>
-    remote.exec <span class="hljs-string">"docker build --tag slowpost_image /home/core/slowpost_image"</span>, <span class="hljs-attribute">silent</span>:<span class="hljs-literal">yes</span>
+    remote.exec <span class="hljs-string">"docker build --tag slowpost_image /home/core/slowpost_image"</span>
     remote.exec <span class="hljs-string">"docker tag slowpost_image slowpost_image:<span class="hljs-subst">#{slowpost.commit.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>)}</span>"</span>
     remote.exec <span class="hljs-string">"docker tag slowpost_image slowpost_image:deploy"</span>
     remote.exec <span class="hljs-string">"rm -r /home/core/slowpost_image"</span>
@@ -1051,13 +1118,15 @@ Replaces placeholders defined in the Dockerfile.template.</p>
             <div class="content"><div class='highlight'><pre>slowpost.w<span class="hljs-function"><span class="hljs-title">riteDockerfile</span> = -&gt;</span>
   {readFileSync, writeFileSync} = <span class="hljs-built_in">require</span> <span class="hljs-string">"fs"</span>
   dockerfile = readFileSync <span class="hljs-string">"slowpost_image/Dockerfile.template"</span>, <span class="hljs-string">"utf-8"</span>
-  dockerfile = dockerfile.replace <span class="hljs-regexp">/COMMENT/</span>, <span class="hljs-string">"This Dockerfile was generated by <span class="hljs-subst">#{slowpost.flightplan.target.task}</span> task on <span class="hljs-subst">#{(<span class="hljs-keyword">new</span> Date).toJSON()}</span>"</span>
-  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_REPO/g</span>, slowpost.repo
-  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_COMMIT/g</span>, slowpost.commit
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_LOCATION/g</span>, slowpost.location <span class="hljs-keyword">or</span> slowpost.flightplan.target.destination
   dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_HOST/g</span>, slowpost.host()
-  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_BRANCH/g</span>, slowpost.branch
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_MINILOCK_ID/g</span>, <span class="hljs-string">"FAKE MINILOCK ID FOR PRODUCTION"</span>
   dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_SESSION_SIGNATURE/g</span>, readFileSync(<span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.signature"</span>)
   dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_SESSION_SECRET/g</span>, readFileSync(<span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.secret"</span>)
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_REPO/g</span>, slowpost.repo
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_COMMIT/g</span>, slowpost.commit
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_BRANCH/g</span>, slowpost.branch
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/COMMENT/</span>, <span class="hljs-string">"This Dockerfile was generated by <span class="hljs-subst">#{slowpost.flightplan.target.task}</span> task on <span class="hljs-subst">#{(<span class="hljs-keyword">new</span> Date).toJSON()}</span>"</span>
   writeFileSync <span class="hljs-string">"slowpost_image/Dockerfile"</span>, dockerfile, <span class="hljs-string">"utf-8"</span></pre></div></div>
             
         </li>
@@ -1343,11 +1412,13 @@ ADD SLOWPOST_HOST.secret.key slowpost/config/SLOWPOST_HOST.secret.key</pre></div
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>ENV slowpost_certificate config/SLOWPOST_HOST.crt
+            <div class="content"><div class='highlight'><pre>ENV slowpost_location SLOWPOST_LOCATION
+ENV slowpost_hostname SLOWPOST_HOST
+ENV slowpost_miniLock_ID SLOWPOST_MINILOCK_ID
+ENV slowpost_certificate config/SLOWPOST_HOST.crt
 ENV slowpost_secret_key config/SLOWPOST_HOST.secret.key
 ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
-ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE
-ENV slowpost_https_port <span class="hljs-number">443</span></pre></div></div>
+ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE</pre></div></div>
             
         </li>
         
