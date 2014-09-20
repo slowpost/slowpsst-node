@@ -88,13 +88,13 @@ slowpost.defineCommands = ->
   # Update the slowpost source code and unit file at destination, restart service and record one commit in the deploy history.
   # If the deploy branch does not exist it is created automatically.
   slowpost.local "deploy", (local) ->
-    branches = (line.trim() for line in local.exec("git branch").stdout.split("\n"))
+    branches = (line.replace("*", "").trim() for line in local.exec("git branch").stdout.trim().split("\n"))
     if "deploy" in branches
       local.log "deploy branch is ready."
     else
       local.log "Creating deploy branch"
       local.exec "git branch --create deploy"
-      local.exec "git checkout deploy"
+    local.exec "git checkout deploy"
   # Every deploy command creates a `Dockerfile` in the `slowpost_image` folder.
   # It is transferred to the destination along with a few other `slowpost_image` files and the `slowpost.service` file.
   # Secrets in the Dockerfile are removed when the transfer is complete so that they are not included in the `deploy` history.
