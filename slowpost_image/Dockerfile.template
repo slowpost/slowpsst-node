@@ -42,17 +42,18 @@ RUN git clone SLOWPOST_REPO
 RUN cd slowpost; npm install iconv
 RUN cd slowpost; npm install
 
-
 # Add certificate and secret key to the `slowpost/config` folder.
 ADD SLOWPOST_HOST.crt slowpost/config/SLOWPOST_HOST.crt
 ADD SLOWPOST_HOST.secret.key slowpost/config/SLOWPOST_HOST.secret.key
 
 # Define the slowpost environment.
+ENV slowpost_location SLOWPOST_LOCATION
+ENV slowpost_hostname SLOWPOST_HOST
+ENV slowpost_miniLock_ID SLOWPOST_MINILOCK_ID
 ENV slowpost_certificate config/SLOWPOST_HOST.crt
 ENV slowpost_secret_key config/SLOWPOST_HOST.secret.key
 ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
 ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE
-ENV slowpost_https_port 443
 
 # Exposes port 443 to host for publication.
 EXPOSE 443
