@@ -1,15 +1,25 @@
-# Exports a `slowpost` instance that should receive `repo` and `flightplan` members in your `flightplan.coffee` script.
+# Exports a `slowpost` instance that should a `flightplan`, `repo` and `miniLock ID` in your `flightplan.coffee` script.
 slowpost = module.exports =
-  repo: undefined
-  flightplan: undefined
+  "flightplan": undefined
+  "repo": undefined
+  "location": undefined
+  "hostname": undefined
+  "miniLock ID": undefined
+  "email address": undefined
 
-# Call `slowpost.defineCommands()` after your `flightplan.briefing` to define the default set of commands.
+# Call `slowpost.defineCommands()` after your `flightplan.briefing` is complete to define the default set of slowpost commands.
 slowpost.defineCommands = ->
+  throw "Can’t define slowpost commands without flightplan" if slowpost["flightplan"] is undefined
+  throw "Can’t define slowpost commands without repo" if slowpost["repo"] is undefined
+  slowpost["location"] ?= slowpost.flightplan.target.destination
+  slowpost["hostname"] ?= slowpost.flightplan.target.hosts[0].host
+  throw "Can’t define slowpost commands without miniLock ID" if slowpost["miniLock ID"] is undefined
+  slowpost["email address"] ?= "bonjour@#{slowpost.host()}"
+
   Authority = require "authority"
   NaCl = require "tweetnacl"
   URL = require "url"
   {readFileSync, writeFileSync, existsSync, readdirSync} = require "fs"
-
 
   # # Command Line Switches
   "<•>"
@@ -283,6 +293,7 @@ slowpost.host = ->
   else
     host.replace("p1.", "")
 
+
 # `slowpost.imageFiles()` are the files in the `slowpost_image` folder that are transfered to destination machines durring a `build` or `deploy` command.
 # Filenames are prefixed with `slowpost_image` for `local.transfer(...)` to `/home/core`.
 slowpost.imageFiles = -> [
@@ -307,7 +318,7 @@ slowpost.removeDockerfileSecrets = ->
 slowpost.writeDockerfile = ->
   {readFileSync, writeFileSync} = require "fs"
   dockerfile = readFileSync "slowpost_image/Dockerfile.template", "utf-8"
-  dockerfile = dockerfile.replace /SLOWPOST_LOCATION/g, slowpost.flightplan.target.destination
+  dockerfile = dockerfile.replace /SLOWPOST_LOCATION/g, slowpost.location or slowpost.flightplan.target.destination
   dockerfile = dockerfile.replace /SLOWPOST_HOST/g, slowpost.host()
   dockerfile = dockerfile.replace /SLOWPOST_MINILOCK_ID/g, "FAKE MINILOCK ID FOR PRODUCTION"
   dockerfile = dockerfile.replace /SLOWPOST_SESSION_SIGNATURE/g, readFileSync("slowpost_image/#{slowpost.host()}.session.signature")
