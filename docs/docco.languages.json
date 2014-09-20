@@ -1,0 +1,11 @@
+{
+  ".mirrorlist":  {"name": "bash", "symbol": "#"},
+  "Dockerfile":   {"name": "bash", "symbol": "#"},
+  ".template":    {"name": "bash", "symbol": "#"},
+  "Cakefile":     {"name": "coffeescript", "symbol": "#"},
+  ".coffee":      {"name": "coffeescript", "symbol": "#"},
+  ".litcoffee":   {"name": "coffeescript", "symbol": "#", "literate": true},
+  ".ls":          {"name": "coffeescript", "symbol": "#"},
+  ".js":          {"name": "javascript", "symbol": "//"},
+  ".service":     {"name": "bash", "symbol": "#"}
+}

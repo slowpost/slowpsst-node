@@ -1,0 +1,129 @@
+#jump_to, #jump_page, .pilcrow { display:none; }
+
+body, img, p, ol, ul, li, pre, h1, h2, h3, h4, h5, h6 { margin: 0; padding: 0; }
+div { position: relative; }
+p tt { white-space: nowrap; }
+
+body, code, tt, pre, h1, h2, h3, h4, h5, h6 {
+  font-family: "Consolas", "PT Mono", "Courier New", monospace;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: normal;
+}
+
+h1, p, ul, body > pre { margin: 20px; }
+h2 { margin: 20px 20px -20px; }
+li { margin: 0 20px; }
+code, tt { padding: 0 3px; margin: 0 -3px; }
+
+/* Bites */
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -30px;
+}
+
+div.annotation h2 { border-top:1px dotted black;  padding: 19px 20px 0; margin:0px; }
+div.annotation h2 + h2 { border: none; margin-top: 0; padding-top: 0; margin:0px;}
+
+pre.console {
+  margin: 20px 0;
+  padding: 20px;
+}
+pre.console tt:before {
+  padding-right: 1ex;
+  content: '$';
+}
+
+h1.filename {
+  margin-top: -22px;
+  margin-bottom: -1px;
+  margin-left: -380px;
+  color: hsla(0, 0%, 0%, 0.5);
+  border-bottom: 1px dotted hsla(0, 0%, 0%, 0.33);
+}
+
+div.annotation h1 {
+  margin: 0;
+  padding: 20px;
+}
+
+div.highlight {
+  padding: 10px;
+}
+div.highlight pre {
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+/* Layout */
+
+body {
+  padding-left: 400px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+ul.sections {
+  list-style: none;
+  margin: 0;
+  margin-left: -400px;
+}
+ul.sections > li {
+  margin: 0;
+}
+ul.sections > li div.annotation {
+  position: absolute;
+  width: 400px;
+}
+ul.sections > li div.content {
+  margin: 0 0 0 400px;
+}
+
+body > header {
+  margin: 60px 20px -5px;
+}
+body > header h1 {
+  font-size: 40px;
+  line-height: 50px;
+  font-weight: bold;
+  font-family: "Calibri", "Avenir", sans-serif;
+  margin: 0px;
+}
+body > header img {
+  height: 50px;
+  vertical-align: top;
+  position: relative;
+}
+body > header img[alt="slowpost"] {
+  top: 3px;
+}
+
+
+body > footer {
+  height: 60px;
+}
+
+/* Syntax */
+
+pre .hljs-number,
+pre .hljs-string,
+pre .hljs-tag .hljs-value,
+pre .hljs-tex .hljs-formula {
+  color: hsl(140, 100%, 30%);
+}
+pre .hljs-subst {
+  color: initial;
+}
+pre .hljs-regexp {
+  color: #B68;
+  color: hsl(330, 100%, 45%);
+}
+pre .hljs-attribute,
+pre .hljs-variable,
+pre .hljs-instancevar {
+  color: hsl(204, 100%, 30%);
+}

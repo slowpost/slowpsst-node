@@ -1,0 +1,5 @@
+docs/index.html
+docs/docco
+node_modules
+slowpost_image/*.secret.key
+slowpost_image/*.session.secret

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Host a slowpost on CoreOS</title>
+<link rel="stylesheet" media="all" href="stylesheet.css">
+<link rel="stylesheet" media="screen" href="screen.css">
+<link rel="stylesheet" media="print" href="print.css">
+<body>
+
+<a class="anchor" id="introduction"></a>
+<header>
+  <h1>
+    Host a
+    <a href="https://slowpost.github.io/slowpost.org/"><img alt="slowpost" src="slowpost.png"></a>
+    on
+    <a href="https://coreos.com/"><img alt="CoreOS" src="coreos.png"></a>
+  </h1>
+</header>
+<p>
+  You will need to aquire:
+</p>
+<ul>
+  <li>A computer running <a href="https://coreos.com/">CoreOS</a> with a publically accessible IP Address.</li>
+  <li>A hostname that is assigned to your public IP address.</li>
+  <li>A personal computer with
+    <a href="http://www.git-scm.com/">git</a>,
+    <a href="https://www.npmjs.org/doc/cli/npm.html">npm</a>
+    and
+    <a href="http://www.openssh.com/">ssh</a>.</li>
+</ul>
+<p>
+  Install <a href="https://github.com/slowpost/slowpost-node">slowpost-node</a> on your personal computer:
+</p>
+<pre class="console">
+<tt>git clone git@github.com:slowpost/slowpost-node.git</tt>
+<tt>cd slowpost-node</tt>
+<tt>npm install</tt>
+</pre>
+<p>
+  Open <code>slowpost.service</code> to get an overview of the system.
+  You don’t need to change this file.
+</p>
+<a class="anchor" id="slowpost.service"></a>
+<slowpost.service>
+
+<a class="anchor" id="Flightplan"></a>
+<h1>Flightplan</h1>
+<p>
+  Edit <code>flightplan.coffee</code> to configure the routes to your slowpost machines.
+  At a minimum you will need to replace <code>"slowpost.example.org"</code> with your own hostname.
+  And you should probably replace the <code>"undefined"</code> destination with something more appropriate such as <code>"paris"</code> or <code>"seoul"</code> or <code>"nyc"</code>.
+</p>
+<a class="anchor" id="flightplan.coffee"></a>
+<flightplan.coffee>
+<p>
+  <code>slowpost.defineCommands()</code> adds the following commands to <code>slowpost.flightplan</code>:
+</p>
+<pre class="console">
+<tt>fly connect:destination</tt>  Test your SSH connection to the destination.
+<tt>fly inspect:destination</tt>  Inspect local and remote hosts.
+<tt>fly   setup:destination</tt>  Setup /slowpost/storage and /root/.ssh at the destination.
+<tt>fly   build:destination</tt>  Build a slowpost_image at the destination.
+<tt>fly  deploy:destination</tt>  Update and restart the slowpost service.
+<tt>fly  status:destination</tt>  Display slowpost status.
+<tt>fly   start:destination</tt>  Start slowpost service.
+<tt>fly    stop:destination</tt>  Stop slowpost service.
+</pre>
+
+<p>
+  Lets suppose you defined a destination named <code>paris</code> in your <code>flightplan.coffee</code> file.
+  To test your SSH connection to <code>paris</code> you would run <tt>fly connect:paris</tt> in your console.
+  The console output for a successfull connect command looks like this:
+</p>
+<pre class="console">
+✈ Flying to connect:paris with 1 flight(s)
+
+✈ Flight 1/1 launched...
+
+paris.example.org $ hostname
+paris.example.org > paris.example.org
+paris.example.org ● ok
+paris.example.org $ cat /etc/motd
+paris.example.org > CoreOS (alpha)
+paris.example.org ● ok
+✈ Flight 1/1 landed after 984 ms
+
+✈ Flightplan finished after 986 ms
+</pre>
+<p>
+  If your connection was OK you would <tt>fly setup:paris</tt> to establish
+    <code>/slowpost/storage</code>,
+    <code>/slowpost/config</code> and
+    <code>/root/.ssh</code> at the <code>paris</code> host.
+  And then <tt>fly deploy:paris</tt> to get the service started.
+</p>
+<p>
+  Lets dig into <code>slowpost.flightplan.coffee</code> to see how the flightplan commands are defined:
+</p>
+<a class="anchor" id="slowpost.flightplan.coffee"></a>
+<slowpost.flightplan.coffee>
+
+<a class="anchor" id="Dockerfile"></a>
+<h1>Dockerfile</h1>
+<p>
+  The <code>slowpost_image/Dockerfile</code> is automatically generated from <code>slowpost_image/Dockerfile.template</code> when you build or deploy.
+  Lets take a look at the template to see the system configuration:
+</p>
+<a class="anchor" id="Dockerfile.template"></a>
+<Dockerfile>
+
+<footer></footer>
+
+<nav>
+  Go to:<br>
+  <a href="#introduction">Introduction</a><br>
+  <a href="#slowpost.service">slowpost.service</a><br>
+  <a href="#Flightplan">Flightplan</a><br>
+  <a href="#flightplan.coffee">flightplan.coffee</a><br>
+  <a href="#slowpost.flightplan.coffee">slowpost.flightplan.coffee</a><br>
+  <a href="#Dockerfile">Dockerfile</a><br>
+  <a href="#Dockerfile.template">Dockerfile.template</a><br>
+</nav>
+
+</body>

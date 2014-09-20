@@ -1,0 +1,66 @@
+# The system is based on [Arch Linux](https://www.archlinux.org/).
+FROM base/archlinux
+
+# The system is started with `npm` by default.
+CMD cd slowpost; npm run start
+
+# Add a `pacman` mirror list and refresh (twice!) to apply the change.
+ADD pacman.mirrorlist /etc/pacman.d/mirrorlist
+RUN pacman --sync --refresh --refresh
+
+# Upgrade the system.
+RUN pacman --sync --refresh --sysupgrade --noconfirm
+
+# Remove new mirrorlist created by pacman.
+RUN rm /etc/pacman.d/mirrorlist.pacnew
+
+# Install `ssh` and `git` on the system.
+RUN pacman --sync openssh git --noconfirm
+
+# Create SSH identity for the `root` account.
+# If SLOWPOST_REPO is private you will need to add `ssh.id.rsa.public.key` to the authorized keys file at your repo host.
+ADD ssh.id.rsa.secret.key root/.ssh/id_rsa
+ADD ssh.id.rsa.public.key root/.ssh/id_rsa.pub
+RUN chmod u=r,go-rwx root/.ssh/*
+RUN cat root/.ssh/id_rsa.pub
+
+# Add repo hostname to `root`’s known hosts.
+ADD ssh.known_hosts root/.ssh/known_hosts
+
+# Install dependencies for `node-gyp` so that `npm install iconv` will work properly.
+RUN pacman --sync gcc make python2 --noconfirm
+ENV PYTHON /usr/sbin/python2
+
+# Install `node` on the system and configure it to run a production environment.
+RUN pacman --sync nodejs --noconfirm
+ENV NODE_ENV production
+
+# Clone source code to `/slowpost`.
+RUN git clone SLOWPOST_REPO
+
+# Install slowpost dependencies.
+RUN cd slowpost; npm install iconv
+RUN cd slowpost; npm install
+
+
+# Add certificate and secret key to the `slowpost/config` folder.
+ADD SLOWPOST_HOST.crt slowpost/config/SLOWPOST_HOST.crt
+ADD SLOWPOST_HOST.secret.key slowpost/config/SLOWPOST_HOST.secret.key
+
+# Define the slowpost environment.
+ENV slowpost_certificate config/SLOWPOST_HOST.crt
+ENV slowpost_secret_key config/SLOWPOST_HOST.secret.key
+ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
+ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE
+ENV slowpost_https_port 443
+
+# Exposes port 443 to host for publication.
+EXPOSE 443
+
+# Set the file system to SLOWPOST_COMMIT.
+RUN cd slowpost; git fetch --all; git reset --hard SLOWPOST_COMMIT
+
+# COMMENT
+
+# Curated by the painted turtle.
+MAINTAINER La tortue peinte

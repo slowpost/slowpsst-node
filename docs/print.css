@@ -1,0 +1,6 @@
+body > nav { display: none; }
+
+pre.console { outline: 1px solid hsla(0, 0%, 0%, 0.33); }
+
+#Flightplan { page-break-before: always; }
+#Dockerfile { page-break-before: always; }

@@ -1,0 +1,28 @@
+##
+## Arch Linux repository mirrorlist
+## Generated on 2014-09-19
+##
+
+## China
+#Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch
+
+## Germany
+#Server = https://archlinux.limun.org/$repo/os/$arch
+#Server = https://ftp.fau.de/archlinux/$repo/os/$arch
+#Server = https://archlinux.my-universe.com/$repo/os/$arch
+
+## Greece
+#Server = https://foss.aueb.gr/mirrors/linux/archlinux/$repo/os/$arch
+
+## Iceland
+#Server = https://mirror.system.is/arch/$repo/os/$arch
+
+## Netherlands
+#Server = https://mirror.i3d.net/pub/archlinux/$repo/os/$arch
+#Server = https://kluisip.nl/public/archlinux/$repo/os/$arch
+
+## Sweden
+#Server = https://ftp.lysator.liu.se/pub/archlinux/$repo/os/$arch
+
+## United States
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
