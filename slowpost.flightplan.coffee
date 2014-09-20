@@ -89,7 +89,6 @@ slowpost.defineCommands = ->
   # If the deploy branch does not exist it is created automatically.
   slowpost.local "deploy", (local) ->
     branches = (line.trim() for line in local.exec("git branch").stdout.split("\n"))
-    log.info branches
     if "deploy" in branches
       local.log "deploy branch is ready."
     else
