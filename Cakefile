@@ -2,7 +2,12 @@
 {exec} = require "child_process"
 {readdirSync, readFileSync, writeFileSync} = require "fs"
 
-task "docs", "Make docs", (options) ->
+task "docs", "Build, commit and publish docs.", (options) ->
+  invoke "docs:build"
+  invoke "docs:commit"
+  invoke "docs:push"
+
+task "docs:build", "Build docs from source files with docco.", (options) ->
   sourceFiles = "*.coffee *.service slowpost_image/Dockerfile.template"
   exec "docco --languages docs/docco.languages.json #{sourceFiles} --output docs/docco", (error, stdout, stderr) ->
     console.info stdout.trim() if stdout
@@ -31,10 +36,10 @@ postProcessDoccoHTML = (file) ->
 
 task "docs:commit", "Commit docs to gh-pages", (options) ->
   series [
-    (f) -> exec "cake docs", f
     (f) -> exec "git checkout gh-pages", f
     (f) -> exec "cp docs/*.css .", f
     (f) -> exec "cp docs/*.html .", f
+    (f) -> exec "cp docs/*.png .", f
     (f) -> exec "git add --all", f
     (f) -> exec "git commit -m 'docs'", (error, stdout, stderr) ->
       console.info(stdout)
@@ -51,7 +56,7 @@ task "docs:commit", "Commit docs to gh-pages", (options) ->
       console.error(stderr)
       throw error if error
 
-task "docs:push", "Push gh-pages", (options) ->
+task "docs:push", "Publish docs at https://slowpost.github.io/slowpost-node/", (options) ->
   exec "git push origin gh-pages", (error, stdout, stderr) ->
     console.info(stdout)
     console.error(stderr)
