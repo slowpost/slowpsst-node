@@ -1,18 +1,15 @@
-# Exports a `slowpost` instance that should receive `flightplan`, `miniLockID` and `repo` in your `flightplan.coffee` script.
+# Exports a `slowpost` instance that should receive `flightplan`, `miniLockID` and `repo` members in your `flightplan.coffee` script.
+#
+# `slowpost.host()` provides the common public hostname of the destination machines. It appears in the `Common Name` and `Email Address` fields of your X.509 certificate and it defines the names of certificate, secret key and session secret files.
+#
+# `slowpost.imageFiles()` are the files in the `slowpost_image` folder that are transfered to destination machines durring a `build` or `deploy` command.
 #
 # The `local` and `remote` methods are provided to help you define your own commands.
 #
-# `slowpost.host()` is the `Common Name` field of your X.509 certificate and it defines the names of certificate, secret key and session secret files.
-#
-# `slowpost.imageFiles()` are the files in the `slowpost_image` folder that are transfered to destination machines durring a `build` or `deploy` command.
 slowpost = module.exports =
   flightplan: undefined
   miniLockID: undefined
   repo: undefined
-  local: ->
-    slowpost.flightplan.local.apply(slowpost.flightplan, arguments)
-  remote: ->
-    slowpost.flightplan.remote.apply(slowpost.flightplan, arguments)
   host: ->
     slowpost.hostname or slowpost.flightplan.target.hosts[0].host
   imageFiles: -> [
@@ -24,6 +21,10 @@ slowpost = module.exports =
     "slowpost_image/#{slowpost.host()}.crt"
     "slowpost_image/#{slowpost.host()}.secret.key"
   ]
+  local: ->
+    slowpost.flightplan.local.apply(slowpost.flightplan, arguments)
+  remote: ->
+    slowpost.flightplan.remote.apply(slowpost.flightplan, arguments)
 
 
 # Call `slowpost.defineCommands()` after your `flightplan.briefing` is complete to define the slowpost flightplan commands.
