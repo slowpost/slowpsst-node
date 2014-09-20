@@ -115,7 +115,7 @@ slowpost.defineCommands = ->
   # It is tagged with `slowpost_image:commit-hash` and `slowpost_image:deploy` to distinguish it from other images.
   slowpost.remote "deploy", (remote) ->
     remote.log "Building /home/core/slowpost_image"
-    remote.exec "docker build --tag slowpost_image /home/core/slowpost_image", silent:yes
+    remote.exec "docker build --tag slowpost_image /home/core/slowpost_image"
     remote.exec "docker tag slowpost_image slowpost_image:#{slowpost.commit.slice(0, 16)}"
     remote.exec "docker tag slowpost_image slowpost_image:deploy"
     remote.exec "rm -r /home/core/slowpost_image"
