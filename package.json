@@ -3,7 +3,7 @@
   "description": "Host a slowpost on CoreOS",
   "repository": {
     "type":      "git",
-    "url":       "ssh://git@github.com:slowpost/slowpost-node.git"
+    "url":       "ssh://git@github.com:slowpost/slowpsst-node.git"
   },
   "dependencies": {
     "authority": "git+https://github.com/45678/authority.git",
