@@ -1,17 +1,24 @@
-# Exports a `slowpost` instance that should a `flightplan`, `repo` and `miniLock ID` in your `flightplan.coffee` script.
+# Exports a `slowpost` instance that should receive `flightplan`, `miniLockID` and `repo` in your `flightplan.coffee` script.
+#
+# `slowpost` provides `local` and `remote` methods to help you define your own commands.
 slowpost = module.exports =
   flightplan: undefined
   miniLockID: undefined
   repo: undefined
+  local: -> slowpost.flightplan.local.apply(slowpost.flightplan, arguments)
+  remote: -> slowpost.flightplan.remote.apply(slowpost.flightplan, arguments)
 
-# Call `slowpost.defineCommands()` after your `flightplan.briefing` is complete to define the default set of slowpost commands.
+# Call `slowpost.defineCommands()` after your `flightplan.briefing` is complete to define the slowpost flightplan commands.
+#
+# `slowpost.hostname` is the public hostname of all machines at the target destination.
+# It appears in the `Common Name` field of your X.509 certificate and it defines the names of your certificate, secret key and session secret files.
 slowpost.defineCommands = ->
   throw "Can’t define slowpost commands without flightplan" if slowpost.flightplan is undefined
   throw "Can’t define slowpost commands without miniLock ID" if slowpost.miniLockID is undefined
   throw "Can’t define slowpost commands without repo" if slowpost.repo is undefined
   slowpost.location ?= slowpost.flightplan.target.destination
   slowpost.hostname ?= slowpost.flightplan.target.hosts[0].host
-  slowpost.emailAddress ?= "bonjour@#{slowpost.host()}"
+  slowpost.emailAddress ?= "bonjour@#{slowpost.hostname}"
 
   Authority = require "authority"
   NaCl = require "tweetnacl"
@@ -56,7 +63,7 @@ slowpost.defineCommands = ->
     local.log "slowpost.flightplan.target.task:", slowpost.flightplan.target.task
     local.log "slowpost.flightplan.target.destination:", slowpost.flightplan.target.destination
     local.log "slowpost.flightplan.target.hosts:", JSON.stringify slowpost.flightplan.target.hosts
-    local.log "slowpost.host:", slowpost.host()
+    local.log "slowpost.host:", slowpost.hostname
     local.log "slowpost.repo:", slowpost.repo
   slowpost.remote ["inspect"], (remote) ->
     remote.exec "id"
@@ -68,7 +75,7 @@ slowpost.defineCommands = ->
   # ## <tt>fly destination</tt>
   # Get slowpost status.
   slowpost.local ["status", "default"], (local) ->
-    local.log "host:", slowpost.host()
+    local.log "host:", slowpost.hostname
     local.log "repo:", slowpost.repo
   slowpost.remote ["status", "default"], (remote) ->
     remote.exec "systemctl status slowpost"
@@ -213,13 +220,13 @@ slowpost.defineCommands = ->
 
   # Make HTTPS session secret and signature.
   slowpost.local ["setup", "make_web_session_secret_and_signature"], (local) ->
-    pathToSessionSecret = "slowpost_image/#{slowpost.host()}.session.secret"
-    pathToSessionSignature = "slowpost_image/#{slowpost.host()}.session.signature"
+    pathToSessionSecret = "slowpost_image/#{slowpost.hostname}.session.secret"
+    pathToSessionSignature = "slowpost_image/#{slowpost.hostname}.session.signature"
     unless existsSync pathToSessionSecret
       local.log "Generating session secret for HTTPS service"
       sessionSecretKey = NaCl.randomBytes(64)
       encodedSessionSecret = NaCl.util.encodeBase64 sessionSecretKey
-      sessionSignature = NaCl.sign NaCl.util.decodeUTF8(slowpost.host()), sessionSecretKey
+      sessionSignature = NaCl.sign NaCl.util.decodeUTF8(slowpost.hostname, sessionSecretKey
       encodedSessionSignature = NaCl.util.encodeBase64 sessionSignature
       writeFileSync pathToSessionSecret, encodedSessionSecret, "utf-8"
       writeFileSync pathToSessionSignature, encodedSessionSignature, "utf-8"
@@ -232,8 +239,8 @@ slowpost.defineCommands = ->
 
   # Make HTTPS certificate and secret key.
   slowpost.local ["setup", "make_https_secret_key"], (local) ->
-    pathToSecretKey   = "slowpost_image/#{slowpost.host()}.secret.key"
-    pathToCertificate = "slowpost_image/#{slowpost.host()}.crt"
+    pathToSecretKey   = "slowpost_image/#{slowpost.hostname}.secret.key"
+    pathToCertificate = "slowpost_image/#{slowpost.hostname}.crt"
     # Make secret key.
     unless existsSync pathToSecretKey
       local.log "Generating secret key for HTTPS service"
@@ -244,8 +251,8 @@ slowpost.defineCommands = ->
     unless existsSync pathToCertificate
       subject =
         "organization":      "Slowpost Mail Exchange"
-        "common_name":       slowpost.host()
-        "email_address":     "bonjour@#{slowpost.host()}"
+        "common_name":       slowpost.hostname
+        "email_address":     "bonjour@#{slowpost.hostname}"
       subjectKey = readFileSync(pathToSecretKey)
       local.log "Generating X.509 certificate for HTTPS service:", JSON.stringify(subject)
       local.waitFor (certificateWrittenToFile) ->
@@ -277,19 +284,6 @@ slowpost.defineCommands = ->
     if storageExists
       remote.log "/slowpost/storage is ready."
 
-# `slowpost` provides `local` and `remote` methods to help you define your own commands.
-slowpost.local = -> slowpost.flightplan.local.apply(slowpost.flightplan, arguments)
-slowpost.remote = -> slowpost.flightplan.remote.apply(slowpost.flightplan, arguments)
-
-# `slowpost.host()` is the public hostname of all machines at the target destination.
-# It appears in `Common Name` and `Email Address` fields of your X.509 certificate and it defines the filenames of your certificate, secret key and session.json files.
-slowpost.host = ->
-  host = slowpost.flightplan.target.hosts[0].host
-  if slowpost.flightplan.target.hosts.length is 1
-    host
-  else
-    host.replace("p1.", "")
-
 
 # `slowpost.imageFiles()` are the files in the `slowpost_image` folder that are transfered to destination machines durring a `build` or `deploy` command.
 # Filenames are prefixed with `slowpost_image` for `local.transfer(...)` to `/home/core`.
@@ -299,15 +293,15 @@ slowpost.imageFiles = -> [
   "slowpost_image/ssh.id.rsa.public.key"
   "slowpost_image/ssh.id.rsa.secret.key"
   "slowpost_image/ssh.known_hosts"
-  "slowpost_image/#{slowpost.host()}.crt"
-  "slowpost_image/#{slowpost.host()}.secret.key"
+  "slowpost_image/#{slowpost.hostname}.crt"
+  "slowpost_image/#{slowpost.hostname}.secret.key"
 ]
 
 # Removes secrets in the local Dockerfile so they don’t appear in the deploy history.
 slowpost.removeDockerfileSecrets = ->
   {readFileSync, writeFileSync} = require "fs"
   dockerfile = readFileSync "slowpost_image/Dockerfile", "utf-8"
-  dockerfile = dockerfile.replace readFileSync("slowpost_image/#{slowpost.host()}.session.secret"), "--secret--"
+  dockerfile = dockerfile.replace readFileSync("slowpost_image/#{slowpost.hostname}.session.secret"), "--secret--"
   writeFileSync "slowpost_image/Dockerfile", dockerfile, "utf-8"
 
 # Writes a Dockerfile to the local file system.
@@ -315,11 +309,11 @@ slowpost.removeDockerfileSecrets = ->
 slowpost.writeDockerfile = ->
   {readFileSync, writeFileSync} = require "fs"
   dockerfile = readFileSync "slowpost_image/Dockerfile.template", "utf-8"
-  dockerfile = dockerfile.replace /SLOWPOST_LOCATION/g, slowpost.location or slowpost.flightplan.target.destination
-  dockerfile = dockerfile.replace /SLOWPOST_HOST/g, slowpost.host()
+  dockerfile = dockerfile.replace /SLOWPOST_LOCATION/g, slowpost.location
+  dockerfile = dockerfile.replace /SLOWPOST_HOSTNAME/g, slowpost.hostname
   dockerfile = dockerfile.replace /SLOWPOST_MINILOCK_ID/g, "FAKE MINILOCK ID FOR PRODUCTION"
-  dockerfile = dockerfile.replace /SLOWPOST_SESSION_SIGNATURE/g, readFileSync("slowpost_image/#{slowpost.host()}.session.signature")
-  dockerfile = dockerfile.replace /SLOWPOST_SESSION_SECRET/g, readFileSync("slowpost_image/#{slowpost.host()}.session.secret")
+  dockerfile = dockerfile.replace /SLOWPOST_SESSION_SIGNATURE/g, readFileSync("slowpost_image/#{slowpost.hostname}.session.signature")
+  dockerfile = dockerfile.replace /SLOWPOST_SESSION_SECRET/g, readFileSync("slowpost_image/#{slowpost.hostname}.session.secret")
   dockerfile = dockerfile.replace /SLOWPOST_REPO/g, slowpost.repo
   dockerfile = dockerfile.replace /SLOWPOST_COMMIT/g, slowpost.commit
   dockerfile = dockerfile.replace /SLOWPOST_BRANCH/g, slowpost.branch
