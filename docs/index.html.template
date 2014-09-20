@@ -26,6 +26,7 @@
     <a href="https://www.npmjs.org/doc/cli/npm.html">npm</a>
     and
     <a href="http://www.openssh.com/">ssh</a>.</li>
+  <li>And a <a href="https://minilock.io/">miniLock</a> ID.</li>
 </ul>
 <p>
   Install <a href="https://github.com/slowpost/slowpost-node">slowpost-node</a> on your personal computer:
@@ -112,12 +113,12 @@ paris.example.org ● ok
 <nav>
   Go to:<br>
   <a href="#introduction">Introduction</a><br>
-  <a href="#slowpost.service">slowpost.service</a><br>
+  &nbsp;<a href="#slowpost.service">slowpost.service</a><br>
   <a href="#Flightplan">Flightplan</a><br>
-  <a href="#flightplan.coffee">flightplan.coffee</a><br>
-  <a href="#slowpost.flightplan.coffee">slowpost.flightplan.coffee</a><br>
+  &nbsp;<a href="#flightplan.coffee">flightplan.coffee</a><br>
+  &nbsp;<a href="#slowpost.flightplan.coffee">slowpost.flightplan.coffee</a><br>
   <a href="#Dockerfile">Dockerfile</a><br>
-  <a href="#Dockerfile.template">Dockerfile.template</a><br>
+  &nbsp;<a href="#Dockerfile.template">Dockerfile.template</a><br>
 </nav>
 
 </body>
