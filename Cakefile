@@ -2,7 +2,10 @@
 {exec} = require "child_process"
 {readdirSync, readFileSync, writeFileSync} = require "fs"
 
-task "docs", "Make docs", (options) ->
+task "docs", "Build and publish docs", (options) ->
+  console.info "docs"
+
+task "docs:build", "Build docs", (options) ->
   sourceFiles = "*.coffee *.service slowpost_image/Dockerfile.template"
   exec "docco --languages docs/docco.languages.json #{sourceFiles} --output docs/docco", (error, stdout, stderr) ->
     console.info stdout.trim() if stdout
@@ -51,7 +54,7 @@ task "docs:commit", "Commit docs to gh-pages", (options) ->
       console.error(stderr)
       throw error if error
 
-task "docs:push", "Push gh-pages", (options) ->
+task "docs:push", "Push gh-pages to origin", (options) ->
   exec "git push origin gh-pages", (error, stdout, stderr) ->
     console.info(stdout)
     console.error(stderr)
