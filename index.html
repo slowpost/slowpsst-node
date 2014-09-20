@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Host a slowpost on CoreOS</title>
+<link rel="stylesheet" media="all" href="stylesheet.css">
+<link rel="stylesheet" media="screen" href="screen.css">
+<link rel="stylesheet" media="print" href="print.css">
+<body>
+
+<a class="anchor" id="introduction"></a>
+<header>
+  <h1>
+    Host a
+    <a href="https://slowpost.github.io/slowpost.org/"><img alt="slowpost" src="slowpost.png"></a>
+    on
+    <a href="https://coreos.com/"><img alt="CoreOS" src="coreos.png"></a>
+  </h1>
+</header>
+<p>
+  You will need to aquire:
+</p>
+<ul>
+  <li>A computer running <a href="https://coreos.com/">CoreOS</a> with a publically accessible IP Address.</li>
+  <li>A hostname that is assigned to your public IP address.</li>
+  <li>A personal computer with
+    <a href="http://www.git-scm.com/">git</a>,
+    <a href="https://www.npmjs.org/doc/cli/npm.html">npm</a>
+    and
+    <a href="http://www.openssh.com/">ssh</a>.</li>
+</ul>
+<p>
+  Install <a href="https://github.com/slowpost/slowpost-node">slowpost-node</a> on your personal computer:
+</p>
+<pre class="console">
+<tt>git clone git@github.com:slowpost/slowpost-node.git</tt>
+<tt>cd slowpost-node</tt>
+<tt>npm install</tt>
+</pre>
+<p>
+  Open <code>slowpost.service</code> to get an overview of the system.
+  You don’t need to change this file.
+</p>
+<a class="anchor" id="slowpost.service"></a>
+
+
+<div>
+
+  <h1 class="filename">slowpost.service</h1>
+  
+  
+  <link rel="stylesheet" media="all" href="docco.css" />
+
+
+  <div class="file">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="flightplan.html">
+                flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.flightplan.html">
+                slowpost.flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.html">
+                slowpost.service
+              </a>
+            
+              
+              <a class="source" href="Dockerfile.html">
+                Dockerfile.template
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li class="title" hidden>
+              <div class="annotation">
+                  <h1>slowpost.service</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Slowpost <a href="http://freedesktop.org/wiki/Software/systemd/">systemd</a> unit file for <a href="https://coreos.com/">CoreOS</a>.</p>
+<p>Slowpost HTTPS service runs in a container named <code>slowpost_container</code> from a <a href="https://docker.com/">Docker</a> image named <code>slowpost_image</code>.
+It listens on port <code>443</code> and it expects to have read and write access to a persistent folder at <code>/slowpost/storage</code> on the host machine.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+[Unit]
+Description=work toward the attrition of unencrypted mail
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker run --rm --name slowpost_container --publish <span class="hljs-number">443</span>:<span class="hljs-number">443</span> --volume /slowpost/storage:/slowpost/data slowpost_image
+ExecStop=/usr/bin/docker stop slowpost_container</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+
+</div>
+
+
+<a class="anchor" id="Flightplan"></a>
+<h1>Flightplan</h1>
+<p>
+  Edit <code>flightplan.coffee</code> to configure the routes to your slowpost machines.
+  At a minimum you will need to replace <code>"slowpost.example.org"</code> with your own hostname.
+  And you should probably replace the <code>"undefined"</code> destination with something more appropriate such as <code>"paris"</code> or <code>"seoul"</code> or <code>"nyc"</code>.
+</p>
+<a class="anchor" id="flightplan.coffee"></a>
+
+
+<div>
+
+  <h1 class="filename">flightplan.coffee</h1>
+  
+  
+  <link rel="stylesheet" media="all" href="docco.css" />
+
+
+  <div class="file">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="flightplan.html">
+                flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.flightplan.html">
+                slowpost.flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.html">
+                slowpost.service
+              </a>
+            
+              
+              <a class="source" href="Dockerfile.html">
+                Dockerfile.template
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li class="title" hidden>
+              <div class="annotation">
+                  <h1>flightplan.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p><a href="https://github.com/pstadler/flightplan">Flightplan</a> executes command sequences on local and remote hosts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Flightplan = <span class="hljs-built_in">require</span> <span class="hljs-string">"flightplan"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Prepare a <code>slowpost</code> instance that will accept a <code>repo</code> and a <code>flightplan</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost = <span class="hljs-built_in">require</span> <span class="hljs-string">"./slowpost.flightplan"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p><code>slowpost.repo</code> defines the location of the source code.
+Redefine it to use a fork.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.repo = <span class="hljs-string">"git://git@github.com:slowpost/slowpost.git"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><code>slowpost.flightplan</code> contains routes to all your destination machines.
+Routes are defined with <code>host</code>, <code>username</code> and <code>agent</code> parameters durring the flightplan briefing.
+Your SSH identities are loaded automatically when <code>agent</code> is assigned to your SSH authentication socket.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.flightplan = (<span class="hljs-keyword">new</span> Flightplan).briefing
+  <span class="hljs-attribute">destinations</span>:
+    <span class="hljs-string">"undefined"</span>: [{
+      <span class="hljs-attribute">host</span>: <span class="hljs-string">"slowpost.example.org"</span>
+      <span class="hljs-attribute">username</span>: <span class="hljs-string">"core"</span>
+      <span class="hljs-attribute">agent</span>: process.env.SSH_AUTH_SOCK
+    }]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Define default set of commands.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.defineCommands()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+
+</div>
+
+<p>
+  <code>slowpost.defineCommands()</code> adds the following commands to <code>slowpost.flightplan</code>:
+</p>
+<pre class="console">
+<tt>fly connect:destination</tt>  Test your SSH connection to the destination.
+<tt>fly inspect:destination</tt>  Inspect local and remote hosts.
+<tt>fly   setup:destination</tt>  Setup /slowpost/storage and /root/.ssh at the destination.
+<tt>fly   build:destination</tt>  Build a slowpost_image at the destination.
+<tt>fly  deploy:destination</tt>  Update and restart the slowpost service.
+<tt>fly  status:destination</tt>  Display slowpost status.
+<tt>fly   start:destination</tt>  Start slowpost service.
+<tt>fly    stop:destination</tt>  Stop slowpost service.
+</pre>
+
+<p>
+  Lets suppose you defined a destination named <code>paris</code> in your <code>flightplan.coffee</code> file.
+  To test your SSH connection to <code>paris</code> you would run <tt>fly connect:paris</tt> in your console.
+  The console output for a successfull connect command looks like this:
+</p>
+<pre class="console">
+✈ Flying to connect:paris with 1 flight(s)
+
+✈ Flight 1/1 launched...
+
+paris.example.org $ hostname
+paris.example.org > paris.example.org
+paris.example.org ● ok
+paris.example.org $ cat /etc/motd
+paris.example.org > CoreOS (alpha)
+paris.example.org ● ok
+✈ Flight 1/1 landed after 984 ms
+
+✈ Flightplan finished after 986 ms
+</pre>
+<p>
+  If your connection was OK you would <tt>fly setup:paris</tt> to establish
+    <code>/slowpost/storage</code>,
+    <code>/slowpost/config</code> and
+    <code>/root/.ssh</code> at the <code>paris</code> host.
+  And then <tt>fly deploy:paris</tt> to get the service started.
+</p>
+<p>
+  Lets dig into <code>slowpost.flightplan.coffee</code> to see how the flightplan commands are defined:
+</p>
+<a class="anchor" id="slowpost.flightplan.coffee"></a>
+
+
+<div>
+
+  <h1 class="filename">slowpost.flightplan.coffee</h1>
+  
+  
+  <link rel="stylesheet" media="all" href="docco.css" />
+
+
+  <div class="file">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="flightplan.html">
+                flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.flightplan.html">
+                slowpost.flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.html">
+                slowpost.service
+              </a>
+            
+              
+              <a class="source" href="Dockerfile.html">
+                Dockerfile.template
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li class="title" hidden>
+              <div class="annotation">
+                  <h1>slowpost.flightplan.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Exports a <code>slowpost</code> instance that should receive <code>repo</code> and <code>flightplan</code> members in your <code>flightplan.coffee</code> script.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost = <span class="hljs-built_in">module</span>.exports =
+  <span class="hljs-attribute">repo</span>: <span class="hljs-literal">undefined</span>
+  <span class="hljs-attribute">flightplan</span>: <span class="hljs-literal">undefined</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Call <code>slowpost.defineCommands()</code> after your <code>flightplan.briefing</code> to define the default set of commands.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.d<span class="hljs-function"><span class="hljs-title">efineCommands</span> = -&gt;</span>
+  Authority = <span class="hljs-built_in">require</span> <span class="hljs-string">"authority"</span>
+  NaCl = <span class="hljs-built_in">require</span> <span class="hljs-string">"tweetnacl"</span>
+  URL = <span class="hljs-built_in">require</span> <span class="hljs-string">"url"</span>
+  {readFileSync, writeFileSync, existsSync, readdirSync} = <span class="hljs-built_in">require</span> <span class="hljs-string">"fs"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h1 id="command-line-switches">Command Line Switches</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-string">"&lt;•&gt;"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h2 id="-tt-branch-branch-name-tt-"><tt>--branch branch-name</tt></h2>
+<p><code>slowpost.branch</code> is defined on the command line at the beginning of <code>setup</code>, <code>build</code> and <code>deploy</code> commands.
+Defaults to the <code>master</code> branch when it is left undefined.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"build"</span>, <span class="hljs-string">"deploy"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-string">"--branch"</span> <span class="hljs-keyword">in</span> process.argv
+      slowpost.branch = process.argv[process.argv.indexOf(<span class="hljs-string">"--branch"</span>)+<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">else</span>
+      slowpost.branch = <span class="hljs-string">"master"</span>
+    local.log <span class="hljs-string">"slowpost.branch is <span class="hljs-subst">#{slowpost.branch}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="-tt-commit-commit-hash-tt-"><tt>--commit commit-hash</tt></h2>
+<p><code>slowpost.commit</code> is also defined for <code>setup</code>, <code>build</code> and <code>deploy</code> commands.
+Default is the last commit in the selected branch of <code>slowpost.repo</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"build"</span>, <span class="hljs-string">"deploy"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    slowpost.commit = process.argv[<span class="hljs-number">3</span>]
+    <span class="hljs-keyword">if</span> slowpost.commit <span class="hljs-keyword">is</span> <span class="hljs-literal">undefined</span>
+      {stdout} = local.exec(<span class="hljs-string">"git ls-remote <span class="hljs-subst">#{slowpost.repo}</span> <span class="hljs-subst">#{slowpost.branch}</span>"</span>, <span class="hljs-attribute">silent</span>:<span class="hljs-literal">yes</span>)
+      slowpost.commit = stdout.split(<span class="hljs-string">"\t"</span>)[<span class="hljs-number">0</span>]
+    local.log <span class="hljs-string">"slowpost.commit is <span class="hljs-subst">#{slowpost.commit}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h1 id="slowpost-flightplan-commands">Slowpost Flightplan Commands</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-string">"&lt;•&gt;"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-connect-destination-tt-"><tt>fly connect:destination</tt></h2>
+<p>Test your connection to the destination.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.remote [<span class="hljs-string">"connect"</span>], <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.exec <span class="hljs-string">"hostname"</span>
+    remote.exec <span class="hljs-string">"cat /etc/motd"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-inspect-destination-tt-"><tt>fly inspect:destination</tt></h2>
+<p>Inspect local and remote hosts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"inspect"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    local.log <span class="hljs-string">"slowpost.flightplan.target.task:"</span>, slowpost.flightplan.target.task
+    local.log <span class="hljs-string">"slowpost.flightplan.target.destination:"</span>, slowpost.flightplan.target.destination
+    local.log <span class="hljs-string">"slowpost.flightplan.target.hosts:"</span>, JSON.stringify slowpost.flightplan.target.hosts
+    local.log <span class="hljs-string">"slowpost.host:"</span>, slowpost.host()
+    local.log <span class="hljs-string">"slowpost.repo:"</span>, slowpost.repo
+  slowpost.remote [<span class="hljs-string">"inspect"</span>], <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.exec <span class="hljs-string">"id"</span>
+    remote.exec <span class="hljs-string">"docker images"</span>
+    remote.exec <span class="hljs-string">"docker ps --all"</span>
+    remote.exec <span class="hljs-string">"docker info"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-status-destination-tt-"><tt>fly status:destination</tt></h2>
+<h2 id="-tt-fly-destination-tt-"><tt>fly destination</tt></h2>
+<p>Get slowpost status.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"status"</span>, <span class="hljs-string">"default"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    local.log <span class="hljs-string">"host:"</span>, slowpost.host()
+    local.log <span class="hljs-string">"repo:"</span>, slowpost.repo
+  slowpost.remote [<span class="hljs-string">"status"</span>, <span class="hljs-string">"default"</span>], <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.exec <span class="hljs-string">"systemctl status slowpost"</span>
+    remote.exec <span class="hljs-string">"docker ps --all"</span>
+    remote.exec <span class="hljs-string">"docker images"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-start-destination-tt-"><tt>fly start:destination</tt></h2>
+<p>Start slowpost and show status, wait ten seconds, and then show status again.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.remote <span class="hljs-string">"start"</span>, <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.sudo <span class="hljs-string">"systemctl start slowpost"</span>
+    remote.exec <span class="hljs-string">"systemctl status slowpost"</span>
+    remote.sudo <span class="hljs-string">"sleep 10"</span>
+    remote.exec <span class="hljs-string">"systemctl status slowpost"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-stop-destination-tt-"><tt>fly stop:destination</tt></h2>
+<p>Stop slowpost and show status.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.remote <span class="hljs-string">"stop"</span>, <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.sudo <span class="hljs-string">"systemctl stop slowpost"</span>
+    remote.exec <span class="hljs-string">"systemctl status slowpost"</span>, <span class="hljs-attribute">failsafe</span>: <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-deploy-destination-tt-"><tt>fly deploy:destination</tt></h2>
+<h2 id="-tt-fly-deploy-destination-commit-commit-hash-tt-"><tt>fly deploy:destination --commit commit-hash</tt></h2>
+<h2 id="-tt-fly-deploy-destination-branch-branch-name-tt-"><tt>fly deploy:destination --branch branch-name</tt></h2>
+<p>Update the slowpost source code and unit file at destination, restart service and record one commit in the deploy history.
+If the deploy branch does not exist it is created automatically.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    branches = (line.trim() <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> local.exec(<span class="hljs-string">"git branch"</span>).stdout.split(<span class="hljs-string">"\n"</span>))
+    log.info branches
+    <span class="hljs-keyword">if</span> <span class="hljs-string">"deploy"</span> <span class="hljs-keyword">in</span> branches
+      local.log <span class="hljs-string">"deploy branch is ready."</span>
+    <span class="hljs-keyword">else</span>
+      local.log <span class="hljs-string">"Creating deploy branch"</span>
+      local.exec <span class="hljs-string">"git branch --create deploy"</span>
+      local.exec <span class="hljs-string">"git checkout deploy"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Every deploy command creates a <code>Dockerfile</code> in the <code>slowpost_image</code> folder.
+It is transferred to the destination along with a few other <code>slowpost_image</code> files and the <code>slowpost.service</code> file.
+Secrets in the Dockerfile are removed when the transfer is complete so that they are not included in the <code>deploy</code> history.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    slowpost.writeDockerfile()
+    local.log <span class="hljs-string">"Wrote slowpost_image/Dockerfile to local filesystem."</span>
+    transfers = [<span class="hljs-string">"slowpost.service"</span>].concat(slowpost.imageFiles())
+    local.log <span class="hljs-string">"Transfering slowpost.service and slowpost_image files:"</span>, JSON.stringify(transfers)
+    local.transfer transfers, <span class="hljs-string">"/home/core"</span>
+    slowpost.removeDockerfileSecrets()
+    local.log <span class="hljs-string">"Removed secrets in local copy of slowpost_image/Dockerfile."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>A record of the deploy is committed to history before remote connections are established.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    slowpost.deploy = <span class="hljs-keyword">new</span> slowpost.Deploy
+    local.exec <span class="hljs-string">"git add --all"</span>
+    local.exec <span class="hljs-string">"git commit --message '<span class="hljs-subst">#{slowpost.deploy.message()}</span>'"</span>, <span class="hljs-attribute">silent</span>: <span class="hljs-literal">yes</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>A <code>docker</code> image named <code>slowpost_image</code> is built at the destination from the files in <code>/home/core/slowpost_image</code>.
+It is tagged with <code>slowpost_image:commit-hash</code> and <code>slowpost_image:deploy</code> to distinguish it from other images.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.remote <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.log <span class="hljs-string">"Building /home/core/slowpost_image"</span>
+    remote.exec <span class="hljs-string">"docker build --tag slowpost_image /home/core/slowpost_image"</span>, <span class="hljs-attribute">silent</span>:<span class="hljs-literal">yes</span>
+    remote.exec <span class="hljs-string">"docker tag slowpost_image slowpost_image:<span class="hljs-subst">#{slowpost.commit.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>)}</span>"</span>
+    remote.exec <span class="hljs-string">"docker tag slowpost_image slowpost_image:deploy"</span>
+    remote.exec <span class="hljs-string">"rm -r /home/core/slowpost_image"</span>
+    remote.log <span class="hljs-string">"Finished build and erased /home/core/slowpost_image"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>When the <code>slowpost_image</code> is ready, the service is stopped, relinked and then restarted.
+The service status is displayed immediately after restart.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    remote.sudo <span class="hljs-string">"systemctl stop slowpost"</span>
+    remote.sudo <span class="hljs-string">"systemctl link /home/core/slowpost.service"</span>
+    remote.sudo <span class="hljs-string">"systemctl start slowpost"</span>
+    remote.exec <span class="hljs-string">"systemctl status slowpost"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>The deploy history is updated after a successfull restart.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    local.exec <span class="hljs-string">"git commit --amend --message '<span class="hljs-subst">#{slowpost.deploy.complete().message()}</span>'"</span>, <span class="hljs-attribute">silent</span>: <span class="hljs-literal">yes</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Service status is displayed a second time after a 10 second delay to give the system a moment to get itself going.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.remote <span class="hljs-string">"deploy"</span>, <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.exec <span class="hljs-string">"docker ps"</span>
+    remote.log <span class="hljs-string">"Checking status in 10 seconds..."</span>
+    remote.exec <span class="hljs-string">"sleep 10"</span>
+    remote.exec <span class="hljs-string">"systemctl status slowpost"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p><code>Deploy</code> instances provide pre-deploy and post-deploy commit messages.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">slowpost</span>.<span class="hljs-title">Deploy</span></span>
+    <span class="hljs-attribute">constructor</span>:<span class="hljs-function"> -&gt;</span>
+      <span class="hljs-property">@started</span> = Date.now()
+
+    <span class="hljs-attribute">complete</span>:<span class="hljs-function"> -&gt;</span>
+      <span class="hljs-property">@completed</span> = Date.now()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>
+
+    <span class="hljs-attribute">message</span>:<span class="hljs-function"> -&gt;</span>
+      {hosts, destination} = slowpost.flightplan.target
+      lines = [
+        <span class="hljs-string">"Deploy to <span class="hljs-subst">#{(h.host <span class="hljs-keyword">for</span> h <span class="hljs-keyword">in</span> hosts).join(<span class="hljs-string">" "</span>)}</span> (<span class="hljs-subst">#{destination}</span>)"</span>
+        <span class="hljs-string">"Commit <span class="hljs-subst">#{slowpost.commit}</span>"</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-property">@completed</span> <span class="hljs-keyword">then</span> <span class="hljs-string">"Completed in <span class="hljs-subst">#{(<span class="hljs-property">@completed</span> - <span class="hljs-property">@started</span>) / <span class="hljs-number">1000</span>}</span> seconds"</span> <span class="hljs-keyword">else</span> <span class="hljs-string">"Incomplete"</span>
+      ]
+      <span class="hljs-string">"\n"</span> + lines.join(<span class="hljs-string">"\n"</span>) + <span class="hljs-string">"\n"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-build-destination-tt-"><tt>fly build:destination</tt></h2>
+<h2 id="-tt-fly-build-destination-commit-commit-hash-tt-"><tt>fly build:destination --commit commit-hash</tt></h2>
+<h2 id="-tt-fly-build-destination-branch-branch-name-tt-"><tt>fly build:destination --branch branch-name</tt></h2>
+<p>Build a slowpost image at the destination.</p>
+<p>Unlike <tt>fly deploy</tt> this does not remove secrets in the local Dockerfile.</p>
+<p>Has no effect on slowpost service.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local <span class="hljs-string">"build"</span>, <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    slowpost.writeDockerfile()
+    local.log <span class="hljs-string">"Wrote slowpost_image/Dockerfile to local filesystem."</span>
+    local.log <span class="hljs-string">"Transfering slowpost_image files:"</span>, JSON.stringify(slowpost.imageFiles())
+    local.transfer slowpost.imageFiles(), <span class="hljs-string">"/home/core"</span>
+  slowpost.remote <span class="hljs-string">"build"</span>, <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    remote.log <span class="hljs-string">"Building /home/core/slowpost_image"</span>
+    remote.exec <span class="hljs-string">"docker build --tag slowpost_image /home/core/slowpost_image"</span>
+    remote.exec <span class="hljs-string">"docker tag slowpost_image slowpost_image:<span class="hljs-subst">#{slowpost.commit.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>)}</span>"</span>
+    remote.exec <span class="hljs-string">"docker tag slowpost_image slowpost_image:build"</span>
+    remote.exec <span class="hljs-string">"docker images"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <h2 id="-tt-fly-setup-destination-tt-"><tt>fly setup:destination</tt></h2>
+<h2 id="-tt-fly-setup-destination-commit-commit-hash-tt-"><tt>fly setup:destination —commit commit-hash</tt></h2>
+<h2 id="-tt-fly-setup-destination-branch-branch-name-tt-"><tt>fly setup:destination —branch branch-name</tt></h2>
+<p>Adds files to root/.ssh and slowpost/config and establishes /slowpost/storage.
+It is safe to run setup over and over because it will skip unnessesary steps automatically.</p>
+<p>Make SSH keys.
+Make SSH known hosts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"setup"</span>, <span class="hljs-string">"make_ssh_keys_for_web_machine"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    pathToSecretKey = <span class="hljs-string">"slowpost_image/ssh.id.rsa.secret.key"</span>
+    pathToPublicKey = <span class="hljs-string">"slowpost_image/ssh.id.rsa.public.key"</span>
+    <span class="hljs-keyword">unless</span> existsSync(pathToSecretKey)
+      local.log <span class="hljs-string">"Generating SSH key pair in slowpost_image folder"</span>
+      local.exec <span class="hljs-string">"ssh-keygen -N '' -C '' -t rsa -b 4096 -f <span class="hljs-subst">#{pathToSecretKey}</span>"</span>
+      local.exec <span class="hljs-string">"mv <span class="hljs-subst">#{pathToSecretKey}</span>.pub <span class="hljs-subst">#{pathToPublicKey}</span>"</span>
+    <span class="hljs-keyword">else</span>
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToSecretKey}</span> is ready."</span>
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToPublicKey}</span> is ready."</span>
+
+  slowpost.local [<span class="hljs-string">"setup"</span>, <span class="hljs-string">"make_ssh_known_hosts_for_web_machine"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    pathToKnownHosts = <span class="hljs-string">"slowpost_image/ssh.known_hosts"</span>
+    <span class="hljs-keyword">unless</span> existsSync pathToKnownHosts
+      local.log <span class="hljs-string">"Generating SSH known hosts file in slowpost_image folder"</span>
+      local.exec <span class="hljs-string">"ssh-keyscan <span class="hljs-subst">#{URL.parse(<span class="hljs-string">"git://"</span>+slowpost.repo).hostname}</span> &gt; <span class="hljs-subst">#{pathToKnownHosts}</span>"</span>
+    <span class="hljs-keyword">else</span>
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToKnownHosts}</span> is ready."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Make HTTPS session secret and signature.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"setup"</span>, <span class="hljs-string">"make_web_session_secret_and_signature"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    pathToSessionSecret = <span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.secret"</span>
+    pathToSessionSignature = <span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.signature"</span>
+    <span class="hljs-keyword">unless</span> existsSync pathToSessionSecret
+      local.log <span class="hljs-string">"Generating session secret for HTTPS service"</span>
+      sessionSecretKey = NaCl.randomBytes(<span class="hljs-number">64</span>)
+      encodedSessionSecret = NaCl.util.encodeBase64 sessionSecretKey
+      sessionSignature = NaCl.sign NaCl.util.decodeUTF8(slowpost.host()), sessionSecretKey
+      encodedSessionSignature = NaCl.util.encodeBase64 sessionSignature
+      writeFileSync pathToSessionSecret, encodedSessionSecret, <span class="hljs-string">"utf-8"</span>
+      writeFileSync pathToSessionSignature, encodedSessionSignature, <span class="hljs-string">"utf-8"</span>
+      local.log <span class="hljs-string">"encoded session secret:"</span>, encodedSessionSecret
+      local.log <span class="hljs-string">"encoded session signature:"</span>, encodedSessionSignature
+    <span class="hljs-keyword">if</span> existsSync pathToSessionSecret
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToSessionSecret}</span> is ready."</span>
+    <span class="hljs-keyword">if</span> existsSync pathToSessionSignature
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToSessionSignature}</span> is ready."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Make HTTPS certificate and secret key.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.local [<span class="hljs-string">"setup"</span>, <span class="hljs-string">"make_https_secret_key"</span>], <span class="hljs-function"><span class="hljs-params">(local)</span> -&gt;</span>
+    pathToSecretKey   = <span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.secret.key"</span>
+    pathToCertificate = <span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.crt"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Make secret key.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">unless</span> existsSync pathToSecretKey
+      local.log <span class="hljs-string">"Generating secret key for HTTPS service"</span>
+      local.exec <span class="hljs-string">"openssl genrsa -out <span class="hljs-subst">#{pathToSecretKey}</span> 2048"</span>
+    <span class="hljs-keyword">if</span> existsSync pathToSecretKey
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToSecretKey}</span> is ready."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>Make certificate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">unless</span> existsSync pathToCertificate
+      subject =
+        <span class="hljs-string">"organization"</span>:      <span class="hljs-string">"Slowpost Mail Exchange"</span>
+        <span class="hljs-string">"common_name"</span>:       slowpost.host()
+        <span class="hljs-string">"email_address"</span>:     <span class="hljs-string">"bonjour@<span class="hljs-subst">#{slowpost.host()}</span>"</span>
+      subjectKey = readFileSync(pathToSecretKey)
+      local.log <span class="hljs-string">"Generating X.509 certificate for HTTPS service:"</span>, JSON.stringify(subject)
+      local.waitFor <span class="hljs-function"><span class="hljs-params">(certificateWrittenToFile)</span> -&gt;</span>
+        Authority.createCertificate
+          <span class="hljs-string">"subject"</span>: subject
+          <span class="hljs-string">"subject_key"</span>: subjectKey
+          <span class="hljs-string">"started_at"</span>: (<span class="hljs-keyword">new</span> Date).toJSON()
+          <span class="hljs-string">"expires_at"</span>: <span class="hljs-string">"2080-01-01T00:00:01.000Z"</span>
+          <span class="hljs-string">"callback"</span>: <span class="hljs-function"><span class="hljs-params">(error, certificate)</span> -&gt;</span>
+            <span class="hljs-keyword">if</span> error <span class="hljs-keyword">then</span> <span class="hljs-keyword">throw</span> error
+            local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToCertificate}</span> serial number is"</span>, certificate.serialNumber
+            local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToCertificate}</span> fingerprint is"</span>, certificate.fingerprint
+            writeFileSync pathToCertificate, certificate.pem
+            certificateWrittenToFile()
+    <span class="hljs-keyword">if</span> existsSync pathToCertificate
+      local.log <span class="hljs-string">"<span class="hljs-subst">#{pathToCertificate}</span> is ready."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>Establish <code>/slowpost/storage</code> on the CoreOS host.
+TODO: Convert to systemd unit.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  slowpost.remote [<span class="hljs-string">"setup"</span>, <span class="hljs-string">"make_storage_volume"</span>], <span class="hljs-function"><span class="hljs-params">(remote)</span> -&gt;</span>
+    storageExists = remote.exec(<span class="hljs-string">"ls /slowpost/storage"</span>, {<span class="hljs-attribute">failsafe</span>:<span class="hljs-literal">yes</span>}).code <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+    <span class="hljs-keyword">unless</span> storageExists
+      remote.log <span class="hljs-string">"Making /slowpost/storage folder..."</span>
+      remote.sudo <span class="hljs-string">"mkdir -p /slowpost/storage"</span>
+      remote.sudo <span class="hljs-string">"chown root:root /slowpost"</span>
+      remote.sudo <span class="hljs-string">"chown -R core:docker /slowpost/storage"</span>
+      remote.sudo <span class="hljs-string">"chmod -R u=rwx,g=rwx,o-rwx /slowpost/storage"</span>
+      storageExists = <span class="hljs-literal">yes</span>
+    <span class="hljs-keyword">if</span> storageExists
+      remote.log <span class="hljs-string">"/slowpost/storage is ready."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p><code>slowpost</code> provides <code>local</code> and <code>remote</code> methods to help you define your own commands.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.l<span class="hljs-function"><span class="hljs-title">ocal</span> = -&gt;</span> slowpost.flightplan.local.apply(slowpost.flightplan, arguments)
+slowpost.r<span class="hljs-function"><span class="hljs-title">emote</span> = -&gt;</span> slowpost.flightplan.remote.apply(slowpost.flightplan, arguments)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p><code>slowpost.host()</code> is the public hostname of all machines at the target destination.
+It appears in <code>Common Name</code> and <code>Email Address</code> fields of your X.509 certificate and it defines the filenames of your certificate, secret key and session.json files.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.h<span class="hljs-function"><span class="hljs-title">ost</span> = -&gt;</span>
+  host = slowpost.flightplan.target.hosts[<span class="hljs-number">0</span>].host
+  <span class="hljs-keyword">if</span> slowpost.flightplan.target.hosts.length <span class="hljs-keyword">is</span> <span class="hljs-number">1</span>
+    host
+  <span class="hljs-keyword">else</span>
+    host.replace(<span class="hljs-string">"p1."</span>, <span class="hljs-string">""</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p><code>slowpost.imageFiles()</code> are the files in the <code>slowpost_image</code> folder that are transfered to destination machines durring a <code>build</code> or <code>deploy</code> command.
+Filenames are prefixed with <code>slowpost_image</code> for <code>local.transfer(...)</code> to <code>/home/core</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.i<span class="hljs-function"><span class="hljs-title">mageFiles</span> = -&gt;</span> [
+  <span class="hljs-string">"slowpost_image/Dockerfile"</span>
+  <span class="hljs-string">"slowpost_image/pacman.mirrorlist"</span>
+  <span class="hljs-string">"slowpost_image/ssh.id.rsa.public.key"</span>
+  <span class="hljs-string">"slowpost_image/ssh.id.rsa.secret.key"</span>
+  <span class="hljs-string">"slowpost_image/ssh.known_hosts"</span>
+  <span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.crt"</span>
+  <span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.secret.key"</span>
+]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Removes secrets in the local Dockerfile so they don’t appear in the deploy history.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.r<span class="hljs-function"><span class="hljs-title">emoveDockerfileSecrets</span> = -&gt;</span>
+  {readFileSync, writeFileSync} = <span class="hljs-built_in">require</span> <span class="hljs-string">"fs"</span>
+  dockerfile = readFileSync <span class="hljs-string">"slowpost_image/Dockerfile"</span>, <span class="hljs-string">"utf-8"</span>
+  dockerfile = dockerfile.replace readFileSync(<span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.secret"</span>), <span class="hljs-string">"--secret--"</span>
+  writeFileSync <span class="hljs-string">"slowpost_image/Dockerfile"</span>, dockerfile, <span class="hljs-string">"utf-8"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Writes a Dockerfile to the local file system.
+Replaces placeholders defined in the Dockerfile.template.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>slowpost.w<span class="hljs-function"><span class="hljs-title">riteDockerfile</span> = -&gt;</span>
+  {readFileSync, writeFileSync} = <span class="hljs-built_in">require</span> <span class="hljs-string">"fs"</span>
+  dockerfile = readFileSync <span class="hljs-string">"slowpost_image/Dockerfile.template"</span>, <span class="hljs-string">"utf-8"</span>
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/COMMENT/</span>, <span class="hljs-string">"This Dockerfile was generated by <span class="hljs-subst">#{slowpost.flightplan.target.task}</span> task on <span class="hljs-subst">#{(<span class="hljs-keyword">new</span> Date).toJSON()}</span>"</span>
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_REPO/g</span>, slowpost.repo
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_COMMIT/g</span>, slowpost.commit
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_HOST/g</span>, slowpost.host()
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_BRANCH/g</span>, slowpost.branch
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_SESSION_SIGNATURE/g</span>, readFileSync(<span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.signature"</span>)
+  dockerfile = dockerfile.replace <span class="hljs-regexp">/SLOWPOST_SESSION_SECRET/g</span>, readFileSync(<span class="hljs-string">"slowpost_image/<span class="hljs-subst">#{slowpost.host()}</span>.session.secret"</span>)
+  writeFileSync <span class="hljs-string">"slowpost_image/Dockerfile"</span>, dockerfile, <span class="hljs-string">"utf-8"</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+
+</div>
+
+
+<a class="anchor" id="Dockerfile"></a>
+<h1>Dockerfile</h1>
+<p>
+  The <code>slowpost_image/Dockerfile</code> is automatically generated from <code>slowpost_image/Dockerfile.template</code> when you build or deploy.
+  Lets take a look at the template to see the system configuration:
+</p>
+<a class="anchor" id="Dockerfile.template"></a>
+
+
+<div>
+
+  <h1 class="filename">Dockerfile.template</h1>
+  
+  
+  <link rel="stylesheet" media="all" href="docco.css" />
+
+
+  <div class="file">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="flightplan.html">
+                flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.flightplan.html">
+                slowpost.flightplan.coffee
+              </a>
+            
+              
+              <a class="source" href="slowpost.html">
+                slowpost.service
+              </a>
+            
+              
+              <a class="source" href="Dockerfile.html">
+                Dockerfile.template
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li class="title" hidden>
+              <div class="annotation">
+                  <h1>Dockerfile.template</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>The system is based on <a href="https://www.archlinux.org/">Arch Linux</a>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>FROM base/archlinux</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The system is started with <code>npm</code> by default.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>CMD <span class="hljs-built_in">cd</span> slowpost; npm run start</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Add a <code>pacman</code> mirror list and refresh (twice!) to apply the change.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>ADD pacman.mirrorlist /etc/pacman.d/mirrorlist
+RUN pacman --sync --refresh --refresh</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Upgrade the system.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN pacman --sync --refresh --sysupgrade --noconfirm</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Remove new mirrorlist created by pacman.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN rm /etc/pacman.d/mirrorlist.pacnew</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Install <code>ssh</code> and <code>git</code> on the system.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN pacman --sync openssh git --noconfirm</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Create SSH identity for the <code>root</code> account.
+If SLOWPOST_REPO is private you will need to add <code>ssh.id.rsa.public.key</code> to the authorized keys file at your repo host.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>ADD ssh.id.rsa.secret.key root/.ssh/id_rsa
+ADD ssh.id.rsa.public.key root/.ssh/id_rsa.pub
+RUN chmod u=r,go-rwx root/.ssh/*
+RUN cat root/.ssh/id_rsa.pub</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Add repo hostname to <code>root</code>’s known hosts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>ADD ssh.known_hosts root/.ssh/known_hosts</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Install dependencies for <code>node-gyp</code> so that <code>npm install iconv</code> will work properly.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN pacman --sync gcc make python2 --noconfirm
+ENV PYTHON /usr/sbin/python2</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Install <code>node</code> on the system and configure it to run a production environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN pacman --sync nodejs --noconfirm
+ENV NODE_ENV production</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Clone source code to <code>/slowpost</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN git clone SLOWPOST_REPO</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Install slowpost dependencies.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN <span class="hljs-built_in">cd</span> slowpost; npm install iconv
+RUN <span class="hljs-built_in">cd</span> slowpost; npm install</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Add certificate and secret key to the <code>slowpost/config</code> folder.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>ADD SLOWPOST_HOST.crt slowpost/config/SLOWPOST_HOST.crt
+ADD SLOWPOST_HOST.secret.key slowpost/config/SLOWPOST_HOST.secret.key</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Define the slowpost environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>ENV slowpost_certificate config/SLOWPOST_HOST.crt
+ENV slowpost_secret_key config/SLOWPOST_HOST.secret.key
+ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
+ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE
+ENV slowpost_https_port <span class="hljs-number">443</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Exposes port 443 to host for publication.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>EXPOSE <span class="hljs-number">443</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Set the file system to SLOWPOST_COMMIT.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>RUN <span class="hljs-built_in">cd</span> slowpost; git fetch --all; git reset --hard SLOWPOST_COMMIT</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>COMMENT</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Curated by the painted turtle.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>MAINTAINER La tortue peinte</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+
+</div>
+
+
+<footer></footer>
+
+<nav>
+  Go to:<br>
+  <a href="#introduction">Introduction</a><br>
+  <a href="#slowpost.service">slowpost.service</a><br>
+  <a href="#Flightplan">Flightplan</a><br>
+  <a href="#flightplan.coffee">flightplan.coffee</a><br>
+  <a href="#slowpost.flightplan.coffee">slowpost.flightplan.coffee</a><br>
+  <a href="#Dockerfile">Dockerfile</a><br>
+  <a href="#Dockerfile.template">Dockerfile.template</a><br>
+</nav>
+
+</body>
