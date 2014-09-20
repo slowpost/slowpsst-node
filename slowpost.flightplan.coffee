@@ -239,7 +239,7 @@ slowpost.defineCommands = ->
       local.log "Generating session secret for HTTPS service"
       sessionSecretKey = NaCl.randomBytes(64)
       encodedSessionSecret = NaCl.util.encodeBase64 sessionSecretKey
-      sessionSignature = NaCl.sign NaCl.util.decodeUTF8(slowpost.host(), sessionSecretKey
+      sessionSignature = NaCl.sign NaCl.util.decodeUTF8(slowpost.host()), sessionSecretKey
       encodedSessionSignature = NaCl.util.encodeBase64 sessionSignature
       writeFileSync pathToSessionSecret, encodedSessionSecret, "utf-8"
       writeFileSync pathToSessionSignature, encodedSessionSignature, "utf-8"
