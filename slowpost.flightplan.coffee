@@ -1,20 +1,17 @@
 # Exports a `slowpost` instance that should a `flightplan`, `repo` and `miniLock ID` in your `flightplan.coffee` script.
 slowpost = module.exports =
-  "flightplan": undefined
-  "repo": undefined
-  "location": undefined
-  "hostname": undefined
-  "miniLock ID": undefined
-  "email address": undefined
+  flightplan: undefined
+  miniLockID: undefined
+  repo: undefined
 
 # Call `slowpost.defineCommands()` after your `flightplan.briefing` is complete to define the default set of slowpost commands.
 slowpost.defineCommands = ->
-  throw "Can’t define slowpost commands without flightplan" if slowpost["flightplan"] is undefined
-  throw "Can’t define slowpost commands without repo" if slowpost["repo"] is undefined
-  slowpost["location"] ?= slowpost.flightplan.target.destination
-  slowpost["hostname"] ?= slowpost.flightplan.target.hosts[0].host
-  throw "Can’t define slowpost commands without miniLock ID" if slowpost["miniLock ID"] is undefined
-  slowpost["email address"] ?= "bonjour@#{slowpost.host()}"
+  throw "Can’t define slowpost commands without flightplan" if slowpost.flightplan is undefined
+  throw "Can’t define slowpost commands without miniLock ID" if slowpost.miniLockID is undefined
+  throw "Can’t define slowpost commands without repo" if slowpost.repo is undefined
+  slowpost.location ?= slowpost.flightplan.target.destination
+  slowpost.hostname ?= slowpost.flightplan.target.hosts[0].host
+  slowpost.emailAddress ?= "bonjour@#{slowpost.host()}"
 
   Authority = require "authority"
   NaCl = require "tweetnacl"
