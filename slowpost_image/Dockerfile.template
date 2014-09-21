@@ -49,7 +49,7 @@ ADD SLOWPOST_HOST.secret.key slowpost/config/SLOWPOST_HOST.secret.key
 # Define the slowpost environment.
 ENV slowpost_location SLOWPOST_LOCATION
 ENV slowpost_hostname SLOWPOST_HOST
-ENV slowpost_miniLock_ID SLOWPOST_MINILOCK_ID
+ENV slowpost_miniLockID SLOWPOST_MINILOCK_ID
 ENV slowpost_certificate config/SLOWPOST_HOST.crt
 ENV slowpost_secret_key config/SLOWPOST_HOST.secret.key
 ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
