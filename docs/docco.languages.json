@@ -1,6 +1,0 @@
-{
-  ".coffee":      {"name": "coffeescript", "symbol": "#"},
-  "Dockerfile":   {"name": "bash", "symbol": "#"},
-  ".service":     {"name": "bash", "symbol": "#"},
-  ".template":    {"name": "bash", "symbol": "#"}
-}
