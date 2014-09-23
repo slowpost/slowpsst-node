@@ -35,23 +35,21 @@ ENV PYTHON /usr/sbin/python2
 RUN pacman --sync nodejs --noconfirm
 ENV NODE_ENV production
 
-# Clone source code to `/slowpost`.
+# Clone source code.
 RUN git clone SLOWPOST_REPO
 
 # Install slowpost dependencies.
 RUN cd slowpost; npm install iconv
 RUN cd slowpost; npm install
 
-# Add certificate and secret key to the `slowpost/config` folder.
-ADD SLOWPOST_HOST.crt slowpost/config/SLOWPOST_HOST.crt
-ADD SLOWPOST_HOST.secret.key slowpost/config/SLOWPOST_HOST.secret.key
+# Add certificate and secret key to the `webserver` folder.
+ADD SLOWPOST_HOST.crt slowpost/webserver/assets/SLOWPOST_HOST.crt
+ADD SLOWPOST_HOST.secret.key slowpost/webserver/SLOWPOST_HOST.secret.key
 
 # Define the slowpost environment.
 ENV slowpost_location SLOWPOST_LOCATION
-ENV slowpost_hostname SLOWPOST_HOST
+ENV NODE_HOSTNAME SLOWPOST_HOST
 ENV slowpost_miniLockID SLOWPOST_MINILOCK_ID
-ENV slowpost_certificate config/SLOWPOST_HOST.crt
-ENV slowpost_secret_key config/SLOWPOST_HOST.secret.key
 ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
 ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE
 
