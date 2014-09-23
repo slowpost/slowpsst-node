@@ -33,7 +33,11 @@ ENV PYTHON /usr/sbin/python2
 
 # Install `node` on the system and configure it to run a production environment.
 RUN pacman --sync nodejs --noconfirm
+
+# Define the node environment.
 ENV NODE_ENV production
+ENV NODE_HOSTNAME SLOWPOST_HOST
+ENV NODE_WHEREABOUTS SLOWPOST_WHEREABOUTS
 
 # Clone source code.
 RUN git clone SLOWPOST_REPO
@@ -47,8 +51,6 @@ ADD SLOWPOST_HOST.crt slowpost/webserver/assets/SLOWPOST_HOST.crt
 ADD SLOWPOST_HOST.secret.key slowpost/webserver/SLOWPOST_HOST.secret.key
 
 # Define the slowpost environment.
-ENV NODE_WHEREABOUTS SLOWPOST_LOCATION
-ENV NODE_HOSTNAME SLOWPOST_HOST
 ENV slowpost_miniLockID SLOWPOST_MINILOCK_ID
 ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
 ENV slowpost_session_signature SLOWPOST_SESSION_SIGNATURE
