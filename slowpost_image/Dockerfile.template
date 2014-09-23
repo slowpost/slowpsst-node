@@ -47,7 +47,7 @@ ADD SLOWPOST_HOST.crt slowpost/webserver/assets/SLOWPOST_HOST.crt
 ADD SLOWPOST_HOST.secret.key slowpost/webserver/SLOWPOST_HOST.secret.key
 
 # Define the slowpost environment.
-ENV slowpost_location SLOWPOST_LOCATION
+ENV NODE_WHEREABOUTS SLOWPOST_LOCATION
 ENV NODE_HOSTNAME SLOWPOST_HOST
 ENV slowpost_miniLockID SLOWPOST_MINILOCK_ID
 ENV slowpost_session_secret SLOWPOST_SESSION_SECRET
