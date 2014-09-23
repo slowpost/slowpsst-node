@@ -273,7 +273,7 @@ slowpost.defineCommands = ->
           "subject": subject
           "subject_key": subjectKey
           "started_at": (new Date).toJSON()
-          "expires_at": "2080-01-01T00:00:01.000Z"
+          "expires_at": "2015-01-01T00:00:01.000Z"
           "callback": (error, certificate) ->
             if error then throw error
             local.log "#{pathToCertificate} serial number is", certificate.serialNumber
